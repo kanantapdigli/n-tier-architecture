@@ -31,15 +31,16 @@ namespace Web.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            await _categoryService.CreateAsync(model);
+            var isSucceeded = await _categoryService.CreateAsync(model);
+            if (isSucceeded) return RedirectToAction(nameof(Index));
 
-            return RedirectToAction(nameof(Index));
+            return View(model);
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(int id)
         {
-            var model = await _categoryService.GetAsync(id);
+            var model = await _categoryService.GetUpdateModelAsync(id);
             if (model == null) return NotFound();
 
             return View(model);
@@ -59,8 +60,10 @@ namespace Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _categoryService.DeleteAsync(id);
-            return RedirectToAction(nameof(Index));
+            var isSucceeded = await _categoryService.DeleteAsync(id);
+            if (isSucceeded) return RedirectToAction(nameof(Index));
+
+            return NotFound();
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Core.Entities;
 using DataAccess.Repositories.Abstract;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Web.Services.Abstract;
 using Web.ViewModels.Category;
 
@@ -8,10 +10,13 @@ namespace Web.Services.Concrete
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ModelStateDictionary _modelState;
 
-        public CategoryService(ICategoryRepository categoryRepository)
+        public CategoryService(ICategoryRepository categoryRepository, 
+            IActionContextAccessor actionContextAccessor)
         {
             _categoryRepository = categoryRepository;
+            _modelState = actionContextAccessor.ActionContext.ModelState;
         }
 
         public async Task<CategoryIndexVM> GetAllAsync()
@@ -24,7 +29,7 @@ namespace Web.Services.Concrete
             return model;
         }
 
-        public async Task<CategoryUpdateVM> GetAsync(int id)
+        public async Task<CategoryUpdateVM> GetUpdateModelAsync(int id)
         {
             var category = await _categoryRepository.GetAsync(id);
             if (category == null) return null;
@@ -38,8 +43,15 @@ namespace Web.Services.Concrete
             return model;
         }
 
-        public async Task CreateAsync(CategoryCreateVM model)
+        public async Task<bool> CreateAsync(CategoryCreateVM model)
         {
+            var isExist = await _categoryRepository.AnyAsync(c => c.Title.Trim().ToLower() == model.Title.Trim().ToLower());
+            if (isExist)
+            {
+                _modelState.AddModelError("Title", "Bu adda kateqoriya mövcuddur");
+                return false;
+            }
+
             var category = new Category
             {
                 Title = model.Title,
@@ -47,6 +59,7 @@ namespace Web.Services.Concrete
             };
 
             await _categoryRepository.CreateAsync(category);
+            return true;
         }
 
         public async Task UpdateAsync(CategoryUpdateVM model)
@@ -61,13 +74,16 @@ namespace Web.Services.Concrete
             }
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var category = await _categoryRepository.GetAsync(id);
             if (category != null)
             {
                 await _categoryRepository.DeleteAsync(category);
+                return true;
             }
+
+            return false;
         }
     }
 }
