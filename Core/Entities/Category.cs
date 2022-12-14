@@ -10,5 +10,7 @@ namespace Core.Entities
     public class Category : BaseEntity
     {
         public string Title { get; set; }
+
+        public ICollection<CategoryTag> CategoriesTags { get; set; }
     }
 }

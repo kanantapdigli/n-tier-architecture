@@ -9,5 +9,6 @@ namespace DataAccess.Repositories.Abstract
 {
     public interface ICategoryRepository : IRepository<Category>
     {
+        Task<Category> GetWithTagsAsync(int id);
     }
 }

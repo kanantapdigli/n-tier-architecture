@@ -17,5 +17,7 @@ namespace DataAccess.Contexts
         }
 
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<CategoryTag> CategoriesTags { get; set; }
     }
 }

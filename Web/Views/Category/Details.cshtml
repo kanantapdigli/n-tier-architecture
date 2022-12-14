@@ -1,0 +1,12 @@
+﻿@using Web.ViewModels.Category
+@model CategoryDetailsVM
+
+<h1>@Model.Category.Title</h1>
+
+<h3>Tags:</h3>
+@{
+    foreach (var categoryTag in Model.Category.CategoriesTags)
+    {
+        <p>@categoryTag.Tag.Title</p>
+    }
+}

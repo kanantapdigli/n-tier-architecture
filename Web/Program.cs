@@ -31,12 +31,15 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 #region Repositories
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<ICategoryTagRepository, CategoryTagRepository>();
 
 #endregion
 
 #region Services
 
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ITagService, TagService>();
 
 #endregion
 
